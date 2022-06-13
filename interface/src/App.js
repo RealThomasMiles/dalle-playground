@@ -77,7 +77,7 @@ const App = ({classes}) => {
         console.log('API call to DALL-E web service with the following prompt [' + promptText + ']');
         setApiError('')
         setIsFetchingImgs(true)
-        callDalleService(backendUrl, promptText, imagesPerQuery).then((response) => {
+        callDalleService(promptText).then((response) => {
             setQueryTime(response['executionTime'])
             setGeneratedImages(response['generatedImgs'])
             setIsFetchingImgs(false)
@@ -109,45 +109,17 @@ const App = ({classes}) => {
             <div className={classes.title}>
                 <Typography variant="h3">
                     DALL-E Playground <span role="img" aria-label="sparks-emoji">✨</span>
+                    <br/>
+                    (for DAMGDegen by ThomasMiles)
                 </Typography>
             </div>
-
-            {!validBackendUrl && <div>
-                <Typography variant="body1" color="textSecondary">
-                    Put your DALL-E backend URL to start
-                </Typography>
-            </div>}
 
             <div className={classes.playgroundSection}>
                 <div className={classes.settingsSection}>
                     <Card className={classes.searchQueryCard}>
                         <CardContent>
-                            <BackendUrlInput setBackendValidUrl={setBackendUrl}
-                                             isValidBackendEndpoint={isValidBackendEndpoint}
-                                             setIsValidBackendEndpoint={setIsValidBackendEndpoint}
-                                             setIsCheckingBackendEndpoint={setIsCheckingBackendEndpoint}
-                                             isCheckingBackendEndpoint={isCheckingBackendEndpoint}
-                                             disabled={isFetchingImgs}/>
                             <TextPromptInput enterPressedCallback={enterPressedCallback}
-                                             disabled={isFetchingImgs || !validBackendUrl}/>
-
-                            <FormControl className={classes.imagesPerQueryControl}
-                                         variant="outlined">
-                                <InputLabel id="images-per-query-label">
-                                    Images to generate
-                                </InputLabel>
-                                <Select labelId="images-per-query-label"
-                                        label="Images per query" value={imagesPerQuery}
-                                        disabled={isFetchingImgs}
-                                        onChange={(event) => setImagesPerQuery(event.target.value)}>
-                                    {Array.from(Array(imagesPerQueryOptions).keys()).map((num) => {
-                                        return <MenuItem key={num + 1} value={num + 1}>
-                                            {num + 1}
-                                        </MenuItem>
-                                    })}
-                                </Select>
-                                <FormHelperText>More images = slower query</FormHelperText>
-                            </FormControl>
+                                             disabled={isFetchingImgs}/>
                         </CardContent>
                     </Card>
                     {queryTime !== 0 && <Typography variant="body2" color="textSecondary">

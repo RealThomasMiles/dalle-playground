@@ -2,33 +2,28 @@ import JsonBigint from "json-bigint";
 
 const REQUEST_TIMEOUT_SEC = 60000
 
-export async function callDalleService(backendUrl, text, numImages) {
+export async function callDalleService(text) {
     const queryStartTime = new Date()
     const response = await Promise.race([
-        (await fetch(backendUrl + `/dalle`, {
+        (await fetch(`https://bf.dallemini.ai/generate`, {
                 method: 'POST',
-                headers: {
-                    'Bypass-Tunnel-Reminder': "go",
-                    'mode': 'no-cors'
-                },
-                body: JSON.stringify({
-                    text,
-                    'num_images': numImages,
-                })
+                mode: 'cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({prompt: text})
             }
         ).then((response) => {
             if (!response.ok) {
                 throw Error(response.statusText);
             }
             return response
-        })).text(), new Promise((_, reject) => setTimeout(
+        })).json(), new Promise((_, reject) => setTimeout(
             () => reject(new Error('Timeout')), REQUEST_TIMEOUT_SEC))
     ]);
 
-
+    console.log(response)
     return {
         'executionTime': Math.round(((new Date() - queryStartTime) / 1000 + Number.EPSILON) * 100) / 100,
-        'generatedImgs': JsonBigint.parse(response)
+        'generatedImgs': response["images"]
     }
 }
 
